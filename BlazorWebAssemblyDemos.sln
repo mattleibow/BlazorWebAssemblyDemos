@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.31809.27
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorWebAssemblyDemos", "BlazorWebAssemblyDemos\BlazorWebAssemblyDemos.csproj", "{A3920C78-EFF0-4838-88CC-8E8300811192}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{955C784B-1C8F-4745-9B18-3FFAE05CAC04}"
+	ProjectSection(SolutionItems) = preProject
+		NativeLibrary\build.sh = NativeLibrary\build.sh
+		NativeLibrary\file.c = NativeLibrary\file.c
+		NativeLibrary\library.a = NativeLibrary\library.a
+		NativeLibrary\library.cpp = NativeLibrary\library.cpp
+		NativeLibrary\library.h = NativeLibrary\library.h
+		NativeLibrary\run-docker.sh = NativeLibrary\run-docker.sh
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A3920C78-EFF0-4838-88CC-8E8300811192}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3920C78-EFF0-4838-88CC-8E8300811192}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3920C78-EFF0-4838-88CC-8E8300811192}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3920C78-EFF0-4838-88CC-8E8300811192}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {90B767DF-42B7-4B82-8B62-7F27F1A537BA}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,13 @@
+﻿@page "/native/file"
+
+<PageTitle>Simple File</PageTitle>
+
+<h1>Simple File</h1>
+
+<p>2 × 4 = @Multiply(2, 4)</p>
+
+@code {
+    // int multiply(int a, int b)
+    [DllImport("file", EntryPoint = "multiply")]
+    extern static int Multiply(int a, int b);
+}

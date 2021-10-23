@@ -1,0 +1,39 @@
+﻿@page "/interop/net/static"
+
+<PageTitle>Interop (.NET Static)</PageTitle>
+
+<h1>Interop (.NET Static)</h1>
+
+<input type="button" @onclick="OnRequestInputGlobal" value="Request Global Input" />
+
+@code {
+    // inject the interop
+
+    [Inject]
+    IJSRuntime JS { get; set; } = null!;
+
+    // load the module
+
+    IJSObjectReference Module { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/MyInterop.js");
+    }
+
+    // ask js to send us a message via a static method
+
+    private async Task OnRequestInputGlobal()
+    {
+        await Module.InvokeVoidAsync("MyInterop.requestGlobal");
+    }
+
+    // that static, managed method
+
+    [JSInvokable]
+    //[JSInvokable("ProcessInputAsync")]
+    public static async Task<string> ProcessInputAsync(string input)
+    {
+        return $"Received input '{input}'";
+    }
+}

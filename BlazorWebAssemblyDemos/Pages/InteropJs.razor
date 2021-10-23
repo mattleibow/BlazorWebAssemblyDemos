@@ -1,0 +1,49 @@
+﻿@page "/interop/js"
+
+<PageTitle>Interop (JavaScript)</PageTitle>
+
+<h1>Interop (JavaScript)</h1>
+
+<input type="text" id="messageBox" @bind="MessageValue" />
+
+<input type="button" @onclick="OnShowAlert" value="Show Alert" />
+
+@code {
+    string MessageValue { get; set; } = "";
+
+    // inject the interop
+
+    [Inject]
+    IJSRuntime JS { get; set; } = null!;
+
+    // load the module
+
+    IJSObjectReference Module { get; set; } = null!;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        Module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/MyInterop.js");
+    }
+
+    // call a method in javascript
+
+    private async Task OnShowAlert()
+    {
+        var args = new AlertArgs
+            {
+                Message = MessageValue,
+                Number = 10,
+            };
+
+        await Module.InvokeVoidAsync("MyInterop.showAlert", args);
+    }
+
+    // a managed type as args
+
+    class AlertArgs
+    {
+        public string Message { get; set; } = "";
+
+        public int Number { get; set; } = 0;
+    }
+}
