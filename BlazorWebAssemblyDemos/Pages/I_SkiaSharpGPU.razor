@@ -44,13 +44,13 @@
                 StrokeCap = SKStrokeCap.Round,
                 TextAlign = SKTextAlign.Center,
                 TextSize = 24,
+                Style = SKPaintStyle.Fill,
             };
 
         // draw the fps counter
         canvas.DrawText($"{fps:0.00}fps", surfaceSize.Width / 2, surfaceSize.Height - 10f, paint);
 
         // background
-        paint.Style = SKPaintStyle.Fill;
         paint.Shader = SKShader.CreateLinearGradient(
             new SKPoint(0, 0),
             new SKPoint(0, surfaceSize.Height),
