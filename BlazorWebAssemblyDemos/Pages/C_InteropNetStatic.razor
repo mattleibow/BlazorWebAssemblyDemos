@@ -34,6 +34,6 @@
     //[JSInvokable("ProcessInputAsync")]
     public static async Task<string> ProcessInputAsync(string input)
     {
-        return $"Received input '{input}'";
+        return "Reversed: " + string.Concat(input.Reverse());
     }
 }
