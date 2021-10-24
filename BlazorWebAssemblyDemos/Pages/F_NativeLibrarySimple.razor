@@ -7,68 +7,44 @@
 <input type="button" @onclick="OnIncrement" value="Increment" />
 <input type="button" @onclick="OnDecrememnt" value="Decrement" />
 
-<p>Value: @myInstance?.Value</p>
+<p>Value: @myInstance.Value</p>
 
 @code {
     MyClass myInstance = new MyClass();
 
     private void OnIncrement()
     {
-        myInstance!.Value++;
+        myInstance.Value++;
     }
 
     private void OnDecrememnt()
     {
-        myInstance!.Value--;
+        myInstance.Value--;
     }
 
     // a C# wrapper class for the C++ class
 
-    unsafe class MyClass : IDisposable
+    unsafe class MyClass : NativeObject
     {
-        private nint handle;
-
         public MyClass()
+            : base(my_class_new())
         {
-            handle = my_class_new();
         }
 
         public int Value
         {
-            get => my_class_get_value(handle);
-            set => my_class_set_value(handle, value);
+            get => my_class_get_value(Handle);
+            set => my_class_set_value(Handle, value);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (handle != 0)
-            {
-                my_class_delete(handle);
-                handle = 0;
-            }
-        }
-
-        ~MyClass() =>
-            Dispose(disposing: false);
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
+        protected override void Dispose(bool disposing) =>
+            my_class_delete(Handle);
 
         // native interop methods
 
-        [DllImport("library")]
-        extern static nint my_class_new();
-
-        [DllImport("library")]
-        extern static void my_class_delete(nint obj);
-
-        [DllImport("library")]
-        extern static int my_class_get_value(nint obj);
-
-        [DllImport("library")]
-        extern static void my_class_set_value(nint obj, int value);
+        [DllImport("library")] extern static nint my_class_new();
+        [DllImport("library")] extern static void my_class_delete(nint obj);
+        [DllImport("library")] extern static int my_class_get_value(nint obj);
+        [DllImport("library")] extern static void my_class_set_value(nint obj, int value);
     }
 }

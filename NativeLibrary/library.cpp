@@ -38,27 +38,27 @@ void MyClass::setCallback(MyCallback callback, void* state)
 
 // the C interop methods
 
-void* my_class_new()
+my_class_ptr my_class_new()
 {
 	return new MyClass();
 }
 
-void my_class_delete(void* obj)
+void my_class_delete(my_class_ptr obj)
 {
 	delete (MyClass*)obj;
 }
 
-int my_class_get_value(void* obj)
+int my_class_get_value(my_class_ptr obj)
 {
 	return ((MyClass*)obj)->getValue();
 }
 
-void my_class_set_value(void* obj, int value)
+void my_class_set_value(my_class_ptr obj, int value)
 {
 	((MyClass*)obj)->setValue(value);
 }
 
-void my_class_set_callback(void* obj, MyCallback callback, void* state)
+void my_class_set_callback(my_class_ptr obj, MyCallback callback, void* state)
 {
 	((MyClass*)obj)->setCallback(callback, state);
 }

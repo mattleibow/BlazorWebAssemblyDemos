@@ -1,13 +1,13 @@
 ﻿@page "/native/library/advanced"
 
-<PageTitle>Simple Library</PageTitle>
+<PageTitle>Library (Advanced)</PageTitle>
 
-<h1>Simple Library</h1>
+<h1>Library (Advanced)</h1>
 
 <input type="button" @onclick="OnIncrement" value="Increment" />
 <input type="button" @onclick="OnDecrememnt" value="Decrement" />
 
-<p>Value: @myInstance?.Value</p>
+<p>Value: @myInstance.Value</p>
 
 <p>A 10x app? @is10x</p>
 
@@ -25,38 +25,34 @@
 
     private void OnIncrement()
     {
-        myInstance!.Value++;
+        myInstance.Value++;
     }
 
     private void OnDecrememnt()
     {
-        myInstance!.Value--;
+        myInstance.Value--;
     }
 
     // a C# wrapper class for the C++ class
 
-    unsafe class MyClass : IDisposable
+    unsafe class MyClass : NativeObject
     {
-        private nint handle;
         private GCHandle callbackHandle;
 
         public MyClass()
+            : base(my_class_new())
         {
-            handle = my_class_new();
-
             // get a handle to the instance delegate
-            var callback = OnIs10xChanged;
-            callbackHandle = GCHandle.Alloc(callback);
-            var callbackState = (IntPtr)callbackHandle;
+            var state = GetStateFromDelegate(OnIs10xChanged, out callbackHandle);
 
             // pass the static callback to C++, and the instance delegate as state
-            my_class_set_callback(handle, OnCallbackProxy, callbackState);
+            my_class_set_callback(Handle, OnCallbackProxy, state);
         }
 
         public int Value
         {
-            get => my_class_get_value(handle);
-            set => my_class_set_value(handle, value);
+            get => my_class_get_value(Handle);
+            set => my_class_set_value(Handle, value);
         }
 
         public event Action<bool>? Is10xChanged;
@@ -64,70 +60,31 @@
         protected virtual void OnIs10xChanged(bool is10x) =>
             Is10xChanged?.Invoke(is10x);
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
-            if (handle != 0)
-            {
-                my_class_delete(handle);
-                handle = 0;
-            }
-
-            if (callbackHandle.IsAllocated)
-                callbackHandle.Free();
-        }
-
-        ~MyClass() =>
-            Dispose(disposing: false);
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
+            my_class_delete(Handle);
+            callbackHandle.Free();
         }
 
         // native interop methods
 
-        [DllImport("library")]
-        extern static nint my_class_new();
-
-        [DllImport("library")]
-        extern static void my_class_delete(nint obj);
-
-        [DllImport("library")]
-        extern static int my_class_get_value(nint obj);
-
-        [DllImport("library")]
-        extern static void my_class_set_value(nint obj, int value);
-
-        [DllImport("library")]
-        extern static void my_class_set_callback(nint obj, MyCallback callback, nint state);
+        [DllImport("library")] extern static nint my_class_new();
+        [DllImport("library")] extern static void my_class_delete(nint obj);
+        [DllImport("library")] extern static int my_class_get_value(nint obj);
+        [DllImport("library")] extern static void my_class_set_value(nint obj, int value);
+        [DllImport("library")] extern static void my_class_set_callback(nint obj, MyCallback callback, nint state);
 
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         delegate void MyCallback([MarshalAs(UnmanagedType.I1)] bool is10x, nint state);
 
         [MonoPInvokeCallback(typeof(MyCallback))]
-        static void OnCallback([MarshalAs(UnmanagedType.I1)] bool is10x, nint state)
+        static void OnCallbackProxy([MarshalAs(UnmanagedType.I1)] bool is10x, nint state)
         {
-            var callbackState = (IntPtr)state;
-            var callbackHandle = GCHandle.FromIntPtr(callbackState);
-            var callback = (Action<bool>?)callbackHandle.Target;
+            // get the handle from the state
+            var callback = GetDelegateFromState<Action<bool>>(state);
 
+            // invoke the instance delegate
             callback?.Invoke(is10x);
         }
-
-        static readonly MyCallback OnCallbackProxy = OnCallback;
-    }
-
-    // BUG: https://github.com/dotnet/runtime/issues/60802
-    // Loads of extra code here to workaround (at least my understanding) a bug using new things
-    [AttributeUsage(AttributeTargets.Method)]
-    internal sealed class MonoPInvokeCallbackAttribute : Attribute
-    {
-        public MonoPInvokeCallbackAttribute(Type type)
-        {
-            Type = type;
-        }
-
-        public Type Type { get; private set; }
     }
 }
