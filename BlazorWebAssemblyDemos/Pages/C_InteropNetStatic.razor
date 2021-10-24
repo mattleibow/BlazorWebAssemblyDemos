@@ -18,7 +18,8 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        Module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/MyInterop.js");
+        if (firstRender)
+            Module = await JS.InvokeAsync<IJSObjectReference>("import", "./js/MyInterop.js");
     }
 
     // ask js to send us a message via a static method
