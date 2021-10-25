@@ -54,7 +54,7 @@
         paint.Shader = SKShader.CreateLinearGradient(
             new SKPoint(0, 0),
             new SKPoint(0, surfaceSize.Height),
-            new[] { SKColors.LightGray, SKColors.DarkGray },
+            new[] { SKColors.LightGray, SKColors.DarkRed },
             SKShaderTileMode.Repeat);
         canvas.DrawCircle(center, clockSize * 0.9f, paint);
         paint.Shader = null;

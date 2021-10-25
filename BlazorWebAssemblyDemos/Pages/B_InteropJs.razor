@@ -6,7 +6,9 @@
 
 <input type="text" id="messageBox" @bind="MessageValue" />
 
-<input type="button" @onclick="OnShowAlert" value="Show Alert" />
+<input type="button" @onclick="OnShowAlertGlobal" value="Show Alert (global)" />
+
+<input type="button" @onclick="OnShowAlertModule" value="Show Alert (module)" />
 
 @code {
     string MessageValue { get; set; } = "";
@@ -15,6 +17,13 @@
 
     [Inject]
     IJSRuntime JS { get; set; } = null!;
+
+    // call a method in javascript
+
+    private async Task OnShowAlertGlobal()
+    {
+        await JS.InvokeVoidAsync("simplestFunction", MessageValue);
+    }
 
     // load the module
 
@@ -28,7 +37,7 @@
 
     // call a method in javascript
 
-    private async Task OnShowAlert()
+    private async Task OnShowAlertModule()
     {
         var args = new AlertArgs
             {
